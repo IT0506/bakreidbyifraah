@@ -1,239 +1,38 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, user-scalable=no"
-    />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bakreid by Ifraah</title>
 
-    <!-- Pygbag / Pygame Web Runtime -->
     <script
         src="https://pygame-web.github.io/cdn/0.9.3/pythons.js"
         type="module"
-        id="site"
         data-python="python3.12"
         data-os="vtx,snd,gui"
-        data-columns="132"
-        data-lines="42"
-        async
-    >
-#<!--
-print("""
-========================================
-Loading Bakreid by Ifraah...
-Pygbag Version : 0.9.3
-Python        : 3.12
-========================================
-""")
-
-import asyncio
-import platform
-from pathlib import Path
-
-async def custom_site():
-    import embed
-    import tarfile
-
-    bundle = "bakreid"
-
-    # Hide loading screen when ready
-    platform.document.body.style.background = "#08121f"
-    platform.window.transfer.hidden = True
-    platform.window.canvas.style.visibility = "visible"
-
-    # Create application directory
-    appdir = Path(f"/data/data/{bundle}")
-    appdir.mkdir(parents=True, exist_ok=True)
-
-    # Extract project archive
-    async with platform.fopen("bakreid.tar.gz", "rb") as archive:
-        tar = tarfile.open(fileobj=archive, mode="r:gz")
-        tar.extractall(path=appdir.as_posix())
-        tar.close()
-
-    # Main file path
-    main = appdir / "assets" / "main.py"
-
-    # Wait until user clicks if audio/media interaction is required
-    if not platform.window.MM.UME:
-        platform.window.infobox.innerText = "Click anywhere to start"
-        platform.window.infobox.style.display = "block"
-
-        while not platform.window.MM.UME:
-            await asyncio.sleep(0.1)
-
-    # Run main.py
-    platform.run_main(
-        PyConfig,
-        loaderhome=appdir / "assets",
-        loadermain=None
-    )
-
-    # Wait until Python app fully initializes
-    while embed.counter() < 0:
-        await asyncio.sleep(0.1)
-
-    # Hide info box
-    platform.window.infobox.style.display = "none"
-    platform.window.config.gui_divider = 1
-    platform.window.window_resize()
-
-    print("Bakreid started successfully.")
-
-asyncio.run(custom_site())
-
-# -->
+        data-archive="bakreid"
+        data-title="Bakreid by Ifraah"
+        async>
     </script>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
+        html, body {
             margin: 0;
-            padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: linear-gradient(135deg, #08121f, #102b46);
-            font-family: Arial, sans-serif;
+            background: #000;
         }
 
-        #canvas {
-            position: fixed;
-            inset: 0;
+        canvas {
             width: 100vw !important;
             height: 100vh !important;
-            border: none;
-            outline: none;
             display: block;
-            background: transparent;
-        }
-
-        #canvas3d {
-            display: none;
-        }
-
-        #transfer {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #08121f, #102b46);
-            color: white;
-            z-index: 1000;
-        }
-
-        #status {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-        }
-
-        #progress {
-            width: 320px;
-            height: 20px;
-        }
-
-        #infobox {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.85);
-            color: #ffffff;
-            padding: 16px 28px;
-            border-radius: 12px;
-            font-size: 20px;
-            font-weight: bold;
-            z-index: 2000;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-        }
-
-        #terminal,
-        #pyconsole,
-        #crt,
-        #system,
-        #html,
-        #dlg {
-            display: none !important;
         }
     </style>
 </head>
-
 <body>
-    <!-- Loading Screen -->
-    <div id="transfer">
-        <div id="status">Loading Bakreid...</div>
-        <progress id="progress" value="0" max="100"></progress>
-    </div>
-
-    <!-- Main Pygame Canvas -->
-    <canvas
-        id="canvas"
-        oncontextmenu="event.preventDefault()"
-        tabindex="1"
-    ></canvas>
-
-    <!-- Hidden 3D canvas -->
-    <canvas id="canvas3d" hidden></canvas>
-
-    <!-- Click-to-start prompt -->
-    <div id="infobox">Click anywhere to start</div>
-
-    <!-- Hidden required containers -->
-    <div id="html"></div>
-    <div id="crt"></div>
-    <div id="system"></div>
-    <div id="dlg"></div>
-    <div id="pyconsole">
-        <div id="terminal"></div>
-    </div>
-
-    <script>
-        // Pygbag runtime config
-        globalThis.config = {
-            xtermjs: "1",
-            _sdl2: "canvas",
-            archive: "bakreid",
-            gui_divider: 1,
-            ume_block: 1,
-            can_close: 0,
-            autorun: 1,
-            PYBUILD: "3.12",
-            fb_width: "1280",
-            fb_height: "720",
-            gui_debug: 0,
-            debug: false,
-            interactive: false,
-            cdn: "https://pygame-web.github.io/cdn/0.9.3/"
-        };
-
-        // Called by pygbag before Python starts
-        async function custom_onload(debug_hidden) {
-            console.log("Pygbag custom_onload");
-            document.getElementById("infobox").style.display = "block";
-        }
-
-        // Optional hooks
-        function custom_prerun() {
-            console.log("Pygbag custom_prerun");
-        }
-
-        function custom_postrun() {
-            console.log("Pygbag custom_postrun");
-        }
-
-        // Hide prompt once user clicks
-        document.addEventListener("click", () => {
-            const box = document.getElementById("infobox");
-            if (box) box.style.display = "none";
-        });
-    </script>
 </body>
 </html>
+```
