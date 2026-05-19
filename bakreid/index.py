@@ -1,29 +1,24 @@
 import pygame
-import sys
-import random
 import asyncio
+import random
 
 pygame.init()
 
-# Screen setup
-WIDTH, HEIGHT = 900, 600
+WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Eid-ul-Adha Mubarak")
 
 clock = pygame.time.Clock()
 
 # Colors
-WHITE = (255, 255, 255)
 SKY = (10, 10, 40)
+WHITE = (255, 255, 255)
 YELLOW = (255, 215, 0)
 GREEN = (20, 120, 40)
-BROWN = (139, 69, 19)
-GRAY = (220, 220, 220)
-BLACK = (0, 0, 0)
 
 # Fonts
 title_font = pygame.font.SysFont("georgia", 56, bold=True)
-subtitle_font = pygame.font.SysFont("comicsansms", 42, bold=True)
+subtitle_font = pygame.font.SysFont("arial", 42, bold=True)
 
 # Stars
 stars = [
@@ -35,84 +30,40 @@ stars = [
     for _ in range(80)
 ]
 
-
-# Goat
-def create_goat():
-    goat = pygame.Surface((140, 100), pygame.SRCALPHA)
-
-    pygame.draw.ellipse(goat, GRAY, (40, 35, 75, 45))
-    pygame.draw.ellipse(goat, (235, 235, 235), (5, 25, 55, 45))
-
-    for x in [55, 75, 95, 110]:
-        pygame.draw.rect(goat, (190, 190, 190), (x, 72, 8, 22))
-
-    pygame.draw.circle(goat, WHITE, (25, 45), 6)
-    pygame.draw.circle(goat, WHITE, (42, 45), 6)
-
-    pygame.draw.circle(goat, BLACK, (25, 45), 2)
-    pygame.draw.circle(goat, BLACK, (42, 45), 2)
-
-    pygame.draw.arc(goat, BROWN, (0, 0, 25, 35), 3.1, 5.2, 4)
-    pygame.draw.arc(goat, BROWN, (35, 0, 25, 35), 3.1, 5.2, 4)
-
-    pygame.draw.line(goat, BLACK, (112, 50), (128, 40), 3)
-
-    return goat
-
-
-goat_img = create_goat()
-
-
-# Moon
-def create_moon():
-    moon = pygame.Surface((120, 120), pygame.SRCALPHA)
-    pygame.draw.circle(moon, YELLOW, (60, 60), 45)
-    pygame.draw.circle(moon, SKY, (78, 55), 40)
-    return moon
-
-
-moon_img = create_moon()
-
-
-# Cloud
-def create_cloud():
-    cloud = pygame.Surface((140, 70), pygame.SRCALPHA)
-    pygame.draw.ellipse(cloud, WHITE, (0, 25, 140, 35))
-    pygame.draw.ellipse(cloud, WHITE, (20, 0, 90, 60))
-    pygame.draw.ellipse(cloud, WHITE, (60, 10, 70, 50))
-    return cloud
-
-
-cloud_img = create_cloud()
-
-
-def draw_mosque():
-    pygame.draw.rect(screen, (25, 25, 25), (250, 350, 400, 180))
-    pygame.draw.circle(screen, (40, 40, 40), (450, 330), 80)
-
-    pygame.draw.rect(screen, (30, 30, 30), (200, 260, 40, 270))
-    pygame.draw.rect(screen, (30, 30, 30), (660, 260, 40, 270))
-
-    pygame.draw.polygon(screen, (50, 50, 50),
-                        [(200, 260), (220, 210), (240, 260)])
-
-    pygame.draw.polygon(screen, (50, 50, 50),
-                        [(660, 260), (680, 210), (700, 260)])
-
-
-# Animation variables
-goat_x1 = -150
-goat_x2 = WIDTH + 150
+# Animation
+goat_x = -150
 cloud_x = 0
 
 
+def draw_goat(x, y):
+    pygame.draw.ellipse(screen, (220, 220, 220), (x, y, 100, 50))
+    pygame.draw.ellipse(screen, (240, 240, 240), (x - 30, y + 5, 40, 30))
+    for lx in [x + 20, x + 40, x + 60, x + 80]:
+        pygame.draw.rect(screen, (180, 180, 180), (lx, y + 45, 5, 20))
+
+
+def draw_moon():
+    pygame.draw.circle(screen, YELLOW, (650, 100), 40)
+    pygame.draw.circle(screen, SKY, (665, 95), 35)
+
+
+def draw_cloud(x, y):
+    pygame.draw.ellipse(screen, WHITE, (x, y, 120, 40))
+    pygame.draw.ellipse(screen, WHITE, (x + 20, y - 15, 60, 50))
+
+
+def draw_mosque():
+    pygame.draw.rect(screen, (30, 30, 30), (250, 320, 300, 180))
+    pygame.draw.circle(screen, (50, 50, 50), (400, 300), 60)
+
+
 async def main():
-    global goat_x1, goat_x2, cloud_x
+    global goat_x, cloud_x
 
     running = True
 
     while running:
-        # Handle events
+        # Events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -121,20 +72,19 @@ async def main():
         screen.fill(SKY)
 
         # Stars
-        for star in stars:
-            pygame.draw.circle(screen, WHITE, (star[0], star[1]), star[2])
+        for x, y, r in stars:
+            pygame.draw.circle(screen, WHITE, (x, y), r)
 
         # Moon
-        screen.blit(moon_img, (WIDTH // 2 - 60, 40))
+        draw_moon()
 
         # Clouds
-        cloud_x -= 0.4
-        if cloud_x < -200:
+        cloud_x -= 0.5
+        if cloud_x < -150:
             cloud_x = WIDTH
 
-        screen.blit(cloud_img, (cloud_x, 100))
-        screen.blit(cloud_img, (cloud_x + 280, 150))
-        screen.blit(cloud_img, (cloud_x + 550, 110))
+        draw_cloud(cloud_x, 120)
+        draw_cloud(cloud_x + 250, 170)
 
         # Mosque
         draw_mosque()
@@ -142,47 +92,27 @@ async def main():
         # Ground
         pygame.draw.rect(screen, GREEN, (0, HEIGHT - 100, WIDTH, 100))
 
-        # Goat movement
-        goat_x1 += 1
-        goat_x2 -= 1
+        # Goat
+        goat_x += 2
+        if goat_x > WIDTH + 100:
+            goat_x = -150
 
-        if goat_x1 > WIDTH + 50:
-            goat_x1 = -150
+        draw_goat(goat_x, HEIGHT - 150)
 
-        if goat_x2 < -150:
-            goat_x2 = WIDTH + 150
-
-        screen.blit(goat_img, (goat_x1, HEIGHT - 165))
-        screen.blit(goat_img, (goat_x2, HEIGHT - 165))
-
-        # Text shadow
-        shadow1 = title_font.render("Eid-ul-Adha", True, BLACK)
-        shadow2 = subtitle_font.render("Mubarak", True, BLACK)
-
-        screen.blit(
-            shadow1,
-            (WIDTH // 2 - shadow1.get_width() // 2 + 3, 423)
-        )
-        screen.blit(
-            shadow2,
-            (WIDTH // 2 - shadow2.get_width() // 2 + 3, 488)
-        )
-
-        # Main text
+        # Text
         title = title_font.render("Eid-ul-Adha", True, YELLOW)
         subtitle = subtitle_font.render("Mubarak", True, WHITE)
 
         screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 420))
-        screen.blit(subtitle, (WIDTH // 2 - subtitle.get_width() // 2, 485))
+        screen.blit(subtitle, (WIDTH // 2 - subtitle.get_width() // 2, 490))
 
         pygame.display.flip()
         clock.tick(60)
 
-        # Required for browser execution
+        # REQUIRED FOR WEB
         await asyncio.sleep(0)
 
     pygame.quit()
-    sys.exit()
 
 
 asyncio.run(main())
